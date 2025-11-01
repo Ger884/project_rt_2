@@ -3,373 +3,689 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plant Box</title>
+  <title>Plant Box - ระบบจัดการสวนอัจฉริยะ</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --primary-green: #2d6a4f;
+      --light-green: #52b788;
+      --bg-light: #f1faee;
+      --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
     body {
-      padding-bottom: 300px; /* ป้องกัน footer ทับเนื้อหา */
+      background: linear-gradient(135deg, #f1faee 0%, #e8f5e9 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding-bottom: 80px;
+    }
+
+    .header-gradient {
+      background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 2rem 0;
+    }
+
+    .header-gradient h1 {
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      animation: fadeInDown 0.8s ease;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .stats-card {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .stats-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .stats-icon {
+      font-size: 2rem;
+      color: var(--light-green);
     }
 
     .box {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
       transition: all 0.3s ease;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-green), var(--light-green));
     }
 
     .box:hover {
-      transform: scale(1.01);
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      border-color: var(--light-green);
+    }
+
+    .sensor-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-green);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-online {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-offline {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      border: none;
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 25px;
+      font-weight: 600;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      color: white;
+    }
+
+    .modal-content {
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      color: white;
+      border-radius: 15px 15px 0 0;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--light-green);
+      box-shadow: 0 0 0 0.25rem rgba(82, 183, 136, 0.25);
+    }
+
+    .analysis-result {
+      background: linear-gradient(135deg, #e8f5e9 0%, #f1faee 100%);
+      padding: 1rem;
+      border-radius: 10px;
+      border-left: 4px solid var(--light-green);
+      margin-top: 1rem;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .progress-bar-animated {
+      background: linear-gradient(90deg, var(--primary-green), var(--light-green));
     }
 
     footer {
-      margin-bottom: 0 !important;
-      padding-bottom: 1rem; /* หรือปรับตามต้องการ */
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
     }
 
-    /* Responsive footer */
+    .info-card {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      transition: all 0.2s ease;
+    }
+
+    .info-card:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+      transform: translateX(5px);
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .search-box {
+      max-width: 400px;
+      margin: 0 auto 2rem;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-chip {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      border: 2px solid var(--light-green);
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .filter-chip:hover, .filter-chip.active {
+      background: var(--light-green);
+      color: white;
+    }
+
     @media (max-width: 768px) {
-      footer .col-md-4 {
-        margin-bottom: 20px;
-      }
+      .sensor-value { font-size: 1.5rem; }
+      .stats-card { padding: 1rem; }
+      .box { padding: 1rem; }
     }
-
-    @media (max-width: 576px) {
-      h1 {
-        font-size: 1.6rem;
-      }
-      .box h2 {
-        font-size: 1.2rem;
-      }
-      .box p {
-        font-size: 0.9rem;
-      }
-      .analyze-btn, .edit-name-btn, .delete-box {
-        margin-bottom: 5px;
-      }
-    }
-
-    #how-to-use .list-group-item {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    #how-to-use .list-group-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-
   </style>
 </head>
 
-<body class="bg-light">
-
+<body>
   <!-- Header -->
-  <div class="container-fluid pb-2 bg-success text-center text-white">
-    <h1 class="pt-3">Welcome to <strong>Plant Box</strong></h1>
-    <p>ช่วยคนปลูกต้นไม้จากคนที่ไม่ปลูกต้นไม้</p>
+  <div class="header-gradient text-center text-white">
+    <div class="container">
+      <h1><i class="fas fa-seedling"></i> Plant Box</h1>
+      <p class="lead mb-0">ระบบจัดการสวนอัจฉริยะ - ดูแลต้นไม้ของคุณอย่างมืออาชีพ</p>
+    </div>
   </div>
 
-  <!-- Main -->
+  <!-- Stats Dashboard -->
+  <div class="container mt-4">
+    <div class="row g-3">
+      <div class="col-md-3 col-6">
+        <div class="stats-card text-center">
+          <i class="fas fa-box stats-icon"></i>
+          <h3 class="mt-2 mb-0" id="totalBoxes">0</h3>
+          <small class="text-muted">กล่องทั้งหมด</small>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stats-card text-center">
+          <i class="fas fa-signal stats-icon"></i>
+          <h3 class="mt-2 mb-0 text-success" id="onlineBoxes">0</h3>
+          <small class="text-muted">ออนไลน์</small>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stats-card text-center">
+          <i class="fas fa-temperature-high stats-icon"></i>
+          <h3 class="mt-2 mb-0" id="avgTemp">--</h3>
+          <small class="text-muted">อุณหภูมิเฉลี่ย</small>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stats-card text-center">
+          <i class="fas fa-tint stats-icon"></i>
+          <h3 class="mt-2 mb-0" id="avgMoisture">--</h3>
+          <small class="text-muted">ความชื้นเฉลี่ย</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Controls -->
   <main class="container mt-4 mb-5">
     <div class="text-center mb-4">
-      <button class="btn btn-primary" id="addBoxBtn">+ เพิ่ม Box</button>
+      <button class="btn btn-gradient" data-bs-toggle="modal" data-bs-target="#addBoxModal">
+        <i class="fas fa-plus"></i> เพิ่มกล่องใหม่
+      </button>
+      <button class="btn btn-outline-success ms-2" onclick="updateAllBoxes()">
+        <i class="fas fa-sync-alt"></i> รีเฟรช
+      </button>
+      <button class="btn btn-outline-danger ms-2" onclick="exportData()">
+        <i class="fas fa-download"></i> ส่งออกข้อมูล
+      </button>
     </div>
+
+    <!-- Search and Filter -->
+    <div class="search-box">
+      <input type="text" class="form-control" id="searchBox" placeholder="🔍 ค้นหากล่องหรือชนิดพืช...">
+    </div>
+
+    <div class="filter-chips">
+      <span class="filter-chip active" data-filter="all">ทั้งหมด</span>
+      <span class="filter-chip" data-filter="online">ออนไลน์</span>
+      <span class="filter-chip" data-filter="offline">ออฟไลน์</span>
+      <span class="filter-chip" data-filter="ready">พร้อมเก็บ</span>
+    </div>
+
     <div id="additionalBoxes" class="row g-3"></div>
+    <div id="noBoxes" class="text-center text-muted mt-5" style="display:none;">
+      <i class="fas fa-seedling fa-4x mb-3 opacity-25"></i>
+      <h4>ยังไม่มีกล่อง</h4>
+      <p>เริ่มต้นด้วยการเพิ่มกล่องแรกของคุณ</p>
+    </div>
   </main>
 
-    <section id="how-to-use" class="py-5 bg-light">
+  <!-- Add Box Modal -->
+  <div class="modal fade" id="addBoxModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-plus-circle"></i> เพิ่มกล่องใหม่</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addBoxForm">
+            <div class="mb-3">
+              <label class="form-label"><i class="fas fa-link"></i> API URL</label>
+              <input type="url" class="form-control" id="apiUrl" required 
+                     placeholder="http://192.168.1.100:8000/api/sensor/latest">
+              <small class="text-muted">URL ที่ให้ข้อมูลเซ็นเซอร์แบบ JSON</small>
+            </div>
+            <div class="mb-3">
+              <label class="form-label"><i class="fas fa-tag"></i> ชื่อกล่อง</label>
+              <input type="text" class="form-control" id="boxName" required placeholder="เช่น สวนหน้าบ้าน">
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label"><i class="fas fa-calendar"></i> วันที่ปลูก</label>
+                <input type="date" class="form-control" id="plantDate" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label"><i class="fas fa-leaf"></i> ชนิดพืช</label>
+                <select class="form-select" id="plantType" required>
+                  <option value="">เลือกชนิดพืช</option>
+                  <option value="มะเขือเทศ">มะเขือเทศ</option>
+                  <option value="พริก">พริก</option>
+                  <option value="ผักกาด">ผักกาด</option>
+                  <option value="ผักบุ้ง">ผักบุ้ง</option>
+                  <option value="แตงกวา">แตงกวา</option>
+                  <option value="อื่นๆ">อื่นๆ</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label"><i class="fas fa-ruler-vertical"></i> ความสูงแรกปลูก (ซม.)</label>
+              <input type="number" class="form-control" id="plantHeight" required 
+                     placeholder="5" min="0" step="0.1">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-gradient" onclick="addBox()">
+            <i class="fas fa-check"></i> เพิ่มกล่อง
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How to Use Section -->
+  <section id="how-to-use" class="py-5">
     <div class="container">
-      <h2 class="text-center mb-4 fw-bold">🧭 วิธีการใช้งานเว็บไซต์</h2>
+      <h2 class="text-center mb-4 fw-bold">
+        <i class="fas fa-question-circle"></i> คู่มือการใช้งาน
+      </h2>
       <div class="row justify-content-center">
         <div class="col-md-8">
-          <div class="list-group list-group-flush shadow-sm rounded bg-white">
-            <div class="list-group-item">
-              <h5 class="fw-semibold mb-1">1️⃣ เพิ่มกล่องใหม่</h5>
-              <p class="mb-0 text-secondary">กดปุ่ม <b>“+ เพิ่ม Box”</b> ด้านบน เพื่อเพิ่มกล่องใหม่สำหรับเก็บข้อมูลหรือรายการของคุณ</p>
-            </div>
-            <div class="list-group-item">
-              <h5 class="fw-semibold mb-1">2️⃣ แก้ไขข้อมูลในกล่อง</h5>
-              <p class="mb-0 text-secondary">คลิกภายในกล่องเพื่อแก้ไขข้อความ เช่น ชื่อพืช, วันที่ปลูก หรือรายละเอียดอื่น ๆ ได้ทันที</p>
-            </div>
-            <div class="list-group-item">
-              <h5 class="fw-semibold mb-1">3️⃣ ลบกล่องที่ไม่ต้องการ</h5>
-              <p class="mb-0 text-secondary">กดปุ่ม <span class="text-danger">🗑️ ลบ</span> เพื่อเอากล่องออกจากหน้าเว็บ</p>
-            </div>
-            <div class="list-group-item">
-              <h5 class="fw-semibold mb-1">4️⃣ ระบบจะบันทึกอัตโนมัติ</h5>
-              <p class="mb-0 text-secondary">ทุกครั้งที่มีการเพิ่มหรือลบกล่อง ระบบจะบันทึกข้อมูลอัตโนมัติไว้ในเบราว์เซอร์ของคุณ</p>
-            </div>
-            <div class="list-group-item">
-              <h5 class="fw-semibold mb-1">5️⃣ ดูการอัปเดตแบบเรียลไทม์</h5>
-              <p class="mb-0 text-secondary">ข้อมูลในแต่ละกล่องจะอัปเดตอัตโนมัติทุก ๆ 5 วินาที โดยไม่ต้องรีเฟรชหน้าเว็บ</p>
-            </div>
+          <div class="info-card">
+            <h5><i class="fas fa-1"></i> เพิ่มกล่องใหม่</h5>
+            <p class="mb-0 text-secondary">กดปุ่ม "เพิ่มกล่องใหม่" กรอกข้อมูล API และรายละเอียดพืช</p>
+          </div>
+          <div class="info-card">
+            <h5><i class="fas fa-2"></i> ติดตามข้อมูลแบบเรียลไทม์</h5>
+            <p class="mb-0 text-secondary">ระบบจะอัพเดทข้อมูลอุณหภูมิและความชื้นทุก 5 วินาที</p>
+          </div>
+          <div class="info-card">
+            <h5><i class="fas fa-3"></i> วิเคราะห์การเจริญเติบโต</h5>
+            <p class="mb-0 text-secondary">กดปุ่ม "วิเคราะห์" เพื่อดูการเจริญเติบโตและวันที่เก็บผลผลิต</p>
+          </div>
+          <div class="info-card">
+            <h5><i class="fas fa-4"></i> จัดการกล่อง</h5>
+            <p class="mb-0 text-secondary">แก้ไขชื่อ ลบ หรือค้นหากล่องได้ตามต้องการ</p>
+          </div>
+          <div class="info-card">
+            <h5><i class="fas fa-5"></i> ส่งออกข้อมูล</h5>
+            <p class="mb-0 text-secondary">ดาวน์โหลดข้อมูลทั้งหมดเป็นไฟล์ JSON</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-
   <!-- Footer -->
-  <footer class="bg-success text-light py-4 fixed-bottom">
-    <div class="container">
-      <hr class="border-light">
-      <p class="text-center mb-0">© 2025 Plant Box Project | Rattanathibate School</p>
+  <footer class="text-light py-3">
+    <div class="container text-center">
+      <p class="mb-0">
+        <i class="fas fa-heart"></i> © 2025 Plant Box Project | Rattanathibate School
+      </p>
     </div>
   </footer>
 
-  <!-- JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    let boxData = [];
+    let boxTimes = [];
+    let currentFilter = 'all';
+
     function formatDateTime(dateStr) {
       if (!dateStr) return "--/--/---- --:--:--";
       const d = new Date(dateStr);
       if (isNaN(d)) return "--/--/---- --:--:--";
-      const day = String(d.getDate()).padStart(2, "0");
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const year = d.getFullYear();
-      const hours = String(d.getHours()).padStart(2, "0");
-      const minutes = String(d.getMinutes()).padStart(2, "0");
-      const seconds = String(d.getSeconds()).padStart(2, "0");
-      return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+      return d.toLocaleString('th-TH', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
     }
 
-    let boxTimes = [];
+    function updateStats() {
+      const total = boxData.length;
+      let online = 0;
+      let tempSum = 0, tempCount = 0;
+      let moistSum = 0, moistCount = 0;
 
-    async function updateAdditionalBoxes() {
-      const boxes = document.querySelectorAll("#additionalBoxes .box");
-      boxTimes = [];
-      for (const box of boxes) {
-        const apiUrl = box.getAttribute("data-api");
-        try {
-          const res = await fetch(apiUrl);
-          if (!res.ok) throw new Error("API error");
-          const data = await res.json();
-          if (data.length > 0) {
-            const tempEl = box.querySelector(".temp");
-            const moistureEl = box.querySelector(".moisture");
-            const datetimeEl = box.querySelector(".datetime");
-
-            if (tempEl) tempEl.innerText = data[0].temperature + " °C";
-            if (moistureEl) moistureEl.innerText = data[0].moisture + " %";
-
-            if (datetimeEl) {
-              const dt = new Date(data[0].timestamp.replace(' ', 'T'));
-              boxTimes.push({ el: datetimeEl, date: dt });
-              datetimeEl.innerText = formatDateTime(dt);
-            }
+      boxData.forEach(box => {
+        if (box.online) {
+          online++;
+          if (box.temperature && !isNaN(box.temperature)) {
+            tempSum += parseFloat(box.temperature);
+            tempCount++;
           }
-        } catch {
-          const tempEl = box.querySelector(".temp");
-          const moistureEl = box.querySelector(".moisture");
-          const datetimeEl = box.querySelector(".datetime");
-
-          if (tempEl) tempEl.innerText = "-- °C";
-          if (moistureEl) moistureEl.innerText = "-- %";
-          if (datetimeEl) datetimeEl.innerText = "--/--/---- --:--:--";
+          if (box.moisture && !isNaN(box.moisture)) {
+            moistSum += parseFloat(box.moisture);
+            moistCount++;
+          }
         }
+      });
+
+      document.getElementById('totalBoxes').textContent = total;
+      document.getElementById('onlineBoxes').textContent = online;
+      document.getElementById('avgTemp').textContent = tempCount > 0 
+        ? (tempSum / tempCount).toFixed(1) + '°C' 
+        : '--';
+      document.getElementById('avgMoisture').textContent = moistCount > 0 
+        ? (moistSum / moistCount).toFixed(1) + '%' 
+        : '--';
+    }
+
+    async function updateBox(box, boxElement) {
+      const apiUrl = box.api;
+      try {
+        const res = await fetch(apiUrl);
+        if (!res.ok) throw new Error("API error");
+        const data = await res.json();
+        
+        if (data.length > 0) {
+          box.temperature = data[0].temperature;
+          box.moisture = data[0].moisture;
+          box.timestamp = data[0].timestamp;
+          box.online = true;
+
+          boxElement.querySelector(".temp").innerHTML = `<i class="fas fa-thermometer-half"></i> ${box.temperature} °C`;
+          boxElement.querySelector(".moisture").innerHTML = `<i class="fas fa-tint"></i> ${box.moisture} %`;
+          
+          const dt = new Date(data[0].timestamp.replace(' ', 'T'));
+          const datetimeEl = boxElement.querySelector(".datetime");
+          datetimeEl.innerText = formatDateTime(dt);
+          
+          boxElement.querySelector('.status-badge').className = 'status-badge status-online';
+          boxElement.querySelector('.status-badge').innerHTML = '<i class="fas fa-check-circle"></i> ออนไลน์';
+        }
+      } catch {
+        box.online = false;
+        box.temperature = null;
+        box.moisture = null;
+        
+        boxElement.querySelector(".temp").innerHTML = '<i class="fas fa-thermometer-half"></i> -- °C';
+        boxElement.querySelector(".moisture").innerHTML = '<i class="fas fa-tint"></i> -- %';
+        boxElement.querySelector(".datetime").innerText = "--/--/---- --:--:--";
+        boxElement.querySelector('.status-badge').className = 'status-badge status-offline';
+        boxElement.querySelector('.status-badge').innerHTML = '<i class="fas fa-times-circle"></i> ออฟไลน์';
       }
     }
 
-    function formatDate(date) {
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = date.getFullYear();
-      const hours = String(date.getHours()).padStart(2, '0');
-      const mins = String(date.getMinutes()).padStart(2, '0');
-      const secs = String(date.getSeconds()).padStart(2, '0');
-      return `${day}/${month}/${year} ${hours}:${mins}:${secs}`;
+    async function updateAllBoxes() {
+      const boxes = document.querySelectorAll("#additionalBoxes .box");
+      for (let i = 0; i < boxes.length; i++) {
+        await updateBox(boxData[i], boxes[i]);
+      }
+      updateStats();
+      applyFilter(currentFilter);
     }
 
-    function tickBoxTimes() {
-      boxTimes.forEach(obj => {
-        obj.date = new Date(obj.date.getTime() + 1000);
-        obj.el.innerText = formatDate(obj.date);
-      });
-    }
-
-    setInterval(tickBoxTimes, 1000);
-
-    function createBox(boxData) {
+    function createBoxElement(box, index) {
       const col = document.createElement("div");
-      col.classList.add("col-12", "col-md-6", "col-lg-4");
+      col.classList.add("col-12", "col-md-6", "col-lg-4", "box-item");
+      col.setAttribute('data-index', index);
 
-      const box = document.createElement("div");
-      box.classList.add("box", "border", "rounded", "p-3", "bg-white", "position-relative", "h-100");
-      box.setAttribute("data-api", boxData.api);
-      box.setAttribute("data-name", boxData.name);
+      const boxDiv = document.createElement("div");
+      boxDiv.classList.add("box");
 
-      box.innerHTML = `
-        <div class="d-flex justify-content-end flex-wrap gap-2 mb-2">
-          <button class="btn btn-info btn-sm analyze-btn">วิเคราะห์</button>
-          <button class="btn btn-warning btn-sm edit-name-btn">แก้ไขชื่อ</button>
-          <button class="btn btn-danger btn-sm delete-box">ลบ</button>
-        </div>
-        <h2 class="text-center box-name">${boxData.name}</h2>
-
-        <div class="row mb-3">
-          <div class="col text-center">
-            <strong>วันแรกปลูก:</strong> <span class="plant-date">${boxData.plantDate || "-"}</span>
-          </div>
-          <div class="col text-center">
-            <strong>ชนิดพืช:</strong> <span class="plant-type">${boxData.plantType || "-"}</span>
-          </div>
-          <div class="col text-center">
-            <strong>ความสูงแรกปลูก (ซม.):</strong> <span class="plant-height">${boxData.plantHeight || "-"}</span>
+      boxDiv.innerHTML = `
+        <span class="status-badge status-offline"><i class="fas fa-times-circle"></i> ออฟไลน์</span>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0 box-name"><i class="fas fa-box"></i> ${box.name}</h4>
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-info analyze-btn" title="วิเคราะห์">
+              <i class="fas fa-chart-line"></i>
+            </button>
+            <button class="btn btn-outline-warning edit-btn" title="แก้ไข">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-outline-danger delete-btn" title="ลบ">
+              <i class="fas fa-trash"></i>
+            </button>
           </div>
         </div>
 
-        <div class="container-fluid mt-3">
-          <div class="row text-center">
-            <div class="col">
-              <h3 class="temp">-- °C</h3>
-              <p>อุณหภูมิในดิน</p>
-            </div>
-            <div class="col">
-              <h3 class="moisture">-- %</h3>
-              <p>ความชื้นในดิน</p>
-            </div>
-            <div class="col">
-              <h3 class="datetime">--/--/---- --:--:--</h3>
-              <p>วันและเวลา</p>
-            </div>
+        <div class="row mb-3 small">
+          <div class="col-6">
+            <i class="fas fa-calendar-alt text-success"></i> <strong>วันปลูก:</strong><br>
+            <span class="plant-date">${box.plantDate || "-"}</span>
+          </div>
+          <div class="col-6">
+            <i class="fas fa-leaf text-success"></i> <strong>ชนิด:</strong><br>
+            <span class="plant-type">${box.plantType || "-"}</span>
           </div>
         </div>
 
-        <div class="analysis-result mt-3 text-center fw-bold"></div>
+        <div class="row text-center mb-3">
+          <div class="col-4">
+            <div class="sensor-value temp">--</div>
+            <small class="text-muted">อุณหภูมิดิน</small>
+          </div>
+          <div class="col-4">
+            <div class="sensor-value moisture">--</div>
+            <small class="text-muted">ความชื้นดิน</small>
+          </div>
+          <div class="col-4">
+            <div class="datetime small fw-bold" style="font-size: 0.75rem;">--:--:--</div>
+            <small class="text-muted">อัพเดท</small>
+          </div>
+        </div>
+
+        <div class="analysis-result" style="display:none;"></div>
       `;
 
-      box.querySelector(".delete-box").addEventListener("click", () => {
-        col.remove();
-        saveBoxes();
-      });
-
-      box.querySelector(".edit-name-btn").addEventListener("click", () => {
-        const newName = prompt("กรุณาใส่ชื่อใหม่:", box.getAttribute("data-name"));
-        if (newName && newName.trim() !== "") {
-          box.setAttribute("data-name", newName.trim());
-          box.querySelector(".box-name").innerText = newName.trim();
-          saveBoxes();
+      boxDiv.querySelector(".delete-btn").addEventListener("click", () => {
+        if (confirm("ต้องการลบกล่องนี้?")) {
+          boxData.splice(index, 1);
+          renderBoxes();
+          saveToStorage();
         }
       });
 
-      box.querySelector(".analyze-btn").addEventListener("click", async () => {
-        const apiUrl = box.getAttribute("data-api");
-        const plantDateStr = box.querySelector(".plant-date").innerText;
-        const plantType = box.querySelector(".plant-type").innerText;
-        const plantHeight = box.querySelector(".plant-height").innerText;
-        const tempText = box.querySelector(".temp").innerText.replace(" °C", "");
-        const moistureText = box.querySelector(".moisture").innerText.replace(" %", "");
-        const resultEl = box.querySelector(".analysis-result");
-        resultEl.innerText = "กำลังวิเคราะห์...";
+      boxDiv.querySelector(".edit-btn").addEventListener("click", () => {
+        const newName = prompt("ชื่อใหม่:", box.name);
+        if (newName && newName.trim()) {
+          box.name = newName.trim();
+          renderBoxes();
+          saveToStorage();
+        }
+      });
+
+      boxDiv.querySelector(".analyze-btn").addEventListener("click", async () => {
+        const resultEl = boxDiv.querySelector(".analysis-result");
+        resultEl.style.display = 'block';
+        resultEl.innerHTML = '<div class="text-center"><div class="loading-spinner"></div> กำลังวิเคราะห์...</div>';
 
         try {
           const res = await fetch('http://192.168.15.1:8000/api/predict_growth', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-              plantDate: plantDateStr,
-              plantType,
-              plantHeight,
-              temperature: parseFloat(tempText),
-              moisture: parseFloat(moistureText)
+              plantDate: box.plantDate,
+              plantType: box.plantType,
+              plantHeight: box.plantHeight,
+              temperature: parseFloat(box.temperature || 0),
+              moisture: parseFloat(box.moisture || 0)
             })
           });
+          
           if (!res.ok) throw new Error("API error");
           const result = await res.json();
+          
           if (result.error) {
-            resultEl.innerText = "เกิดข้อผิดพลาด: " + result.error;
+            resultEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${result.error}`;
             return;
           }
 
           const today = new Date();
           const harvestDate = new Date(result.estimated_harvest_date);
-          const harvestInfo = today >= harvestDate
-            ? `เก็บผลผลิตได้ตั้งแต่วันที่: ${result.estimated_harvest_date}`
-            : `คาดว่าจะเก็บได้ในวันที่: ${result.estimated_harvest_date}`;
+          const isReady = today >= harvestDate;
+          
+          box.isReady = isReady;
 
           resultEl.innerHTML = `
-            ${harvestInfo} <br>
-            อัตราการเจริญเติบโตประมาณ: ${result.growth_rate_cm_per_day} ซม./วัน
+            <div class="d-flex align-items-center mb-2">
+              <i class="fas ${isReady ? 'fa-check-circle text-success' : 'fa-clock text-warning'} me-2"></i>
+              <strong>${isReady ? 'พร้อมเก็บผลผลิต!' : 'ยังไม่พร้อมเก็บ'}</strong>
+            </div>
+            <div class="small">
+              <i class="fas fa-calendar-check"></i> วันที่เก็บ: ${result.estimated_harvest_date}<br>
+              <i class="fas fa-chart-line"></i> อัตราเติบโต: ${result.growth_rate_cm_per_day} ซม./วัน
+            </div>
           `;
         } catch (error) {
-          resultEl.innerText = "ไม่สามารถวิเคราะห์ได้: " + error.message;
+          resultEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> เกิดข้อผิดพลาด: ${error.message}`;
         }
       });
 
-      col.appendChild(box);
+      col.appendChild(boxDiv);
       return col;
     }
 
-    function saveBoxes() {
-      const boxes = document.querySelectorAll("#additionalBoxes .box");
-      const data = [];
-      boxes.forEach(box => {
-        data.push({
-          name: box.getAttribute("data-name"),
-          api: box.getAttribute("data-api"),
-          plantDate: box.querySelector(".plant-date").innerText,
-          plantType: box.querySelector(".plant-type").innerText,
-          plantHeight: box.querySelector(".plant-height").innerText,
-        });
-      });
-      localStorage.setItem("plantBoxes", JSON.stringify(data));
-    }
-
-    function loadBoxes() {
-      const data = localStorage.getItem("plantBoxes");
-      if (!data) return;
-      const boxList = JSON.parse(data);
-      const boxContainer = document.getElementById("additionalBoxes");
-      boxContainer.innerHTML = "";
-
-      boxList.forEach(boxData => {
-        const box = createBox(boxData);
-        boxContainer.appendChild(box);
-      });
-
-      updateAdditionalBoxes();
-    }
-
-    function isValidUrl(string) {
-      try {
-        new URL(string);
-        return true;
-      } catch (_) {
-        return false;
+    function renderBoxes() {
+      const container = document.getElementById("additionalBoxes");
+      const noBoxes = document.getElementById("noBoxes");
+      
+      container.innerHTML = "";
+      
+      if (boxData.length === 0) {
+        noBoxes.style.display = 'block';
+        return;
       }
+      
+      noBoxes.style.display = 'none';
+      boxData.forEach((box, index) => {
+        const boxEl = createBoxElement(box, index);
+        container.appendChild(boxEl);
+      });
+      
+      updateAllBoxes();
     }
 
-    document.getElementById("addBoxBtn").addEventListener("click", () => {
-      const apiUrl = prompt("กรุณาใส่ API URL ของกล่องนี้ (เช่น http://192.168.1.100:8000/api/sensor/latest):");
-      if (!apiUrl) return alert("ต้องใส่ API URL");
-      if (!isValidUrl(apiUrl)) return alert("URL ไม่ถูกต้อง");
+    function addBox() {
+      const apiUrl = document.getElementById('apiUrl').value.trim();
+      const name = document.getElementById('boxName').value.trim();
+      const plantDate = document.getElementById('plantDate').value;
+      const plantType = document.getElementById('plantType').value;
+      const plantHeight = document.getElementById('plantHeight').value;
 
-      const boxName = prompt("ตั้งชื่อกล่องนี้:", `Box ${document.getElementById("additionalBoxes").childElementCount + 1}`);
-      if (!boxName || boxName.trim() === "") return alert("ต้องตั้งชื่อกล่อง");
+      if (!apiUrl || !name || !plantDate || !plantType || !plantHeight) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+        return;
+      }
 
-      const plantDate = prompt("กรุณาใส่วันแรกปลูก (YYYY-MM-DD):");
-      if (!plantDate || !/^\d{4}-\d{2}-\d{2}$/.test(plantDate)) return alert("รูปแบบวันที่ไม่ถูกต้อง");
-
-      const plantType = prompt("กรุณาใส่ชนิดพืช:");
-      if (!plantType || plantType.trim() === "") return alert("ต้องใส่ชนิดพืช");
-
-      const plantHeight = prompt("กรุณาใส่ความสูงแรกปลูก (ซม.):");
-      if (!plantHeight || isNaN(parseFloat(plantHeight))) return alert("ต้องใส่เป็นตัวเลข");
-
-      const boxContainer = document.getElementById("additionalBoxes");
-
-      const boxData = {
-        api: apiUrl.trim(),
-        name: boxName.trim(),
-        plantDate: plantDate.trim(),
-        plantType: plantType.trim(),
-        plantHeight: plantHeight.trim(),
-      };
-
-      const box = createBox(boxData);
-      boxContainer.appendChild(box);
-      saveBoxes();
-      updateAdditionalBoxes();
-    });
-
-    setInterval(updateAdditionalBoxes, 5000);
-    loadBoxes();
-  </script>
-</body>
-</html>
+      boxData.push({
+        api: apiUrl,
+        name: name
